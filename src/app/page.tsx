@@ -42,16 +42,17 @@ export default function Home() {
         body: JSON.stringify({ walletAddress }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(errorMessage || 'Failed to fetch data');
+        throw new Error( data.error || 'Failed to fetch data');
       }
 
-      const data = await response.json();
       setResult(data);
     } catch (error: any) { // eslint-disable-line
       console.error(error);
       setError(error.message);
+      setResult(null)
     } finally {
       setIsLoading(false);
     }
@@ -84,32 +85,32 @@ export default function Home() {
         </button>
       </form>
 
-      {error && <div className="text-red-500 mb-4">{error}</div>}
 
-        <div className="shadow-md border-gray-700 border-2 rounded px-8 pt-6 pb-8 mb-4">
-          {isLoading ? (
+      <div className="shadow-md border-gray-700 border-2 rounded px-8 py-6 mb-4">
+        {error && <div className="text-red-500">{error}</div>}
+        {isLoading ? (
+          <p className="text-xl">
+            Loading...
+          </p>
+        ) : result ? (
+            <>
             <p className="text-xl mb-4">
-              Loading...
+              {getMessage(result.costs.chemoSession)}
             </p>
-          ) : result ? (
-              <>
-              <p className="text-xl mb-4">
-                {getMessage(result.costs.chemoSession)}
-              </p>
 
-              <p className="text-xl mb-4">
-                Based on your Ethereum transaction history, you could have donated for{' '}
-                <span className="font-bold">{result.costs.chemoSession}</span> chemo treatment sessions!
-              </p>
-              <p className="text-gray-500 text-base">
-                Your total estimated losses were <span className="font-bold">${result.costs.totalLossesUSD.toFixed(2)}</span>.
-              </p>
-              <p className="text-gray-500 text-base">
-                The average cost per chemo session <span className="font-bold">${result.averageSessionCostUSD.toFixed(2)}</span>.
-              </p>
-              </>
-          ) : null }
-        </div>
+            <p className="text-xl mb-4">
+              Based on your Ethereum transaction history, you could have donated for{' '}
+              <span className="font-bold">{result.costs.chemoSession}</span> chemo treatment sessions!
+            </p>
+            <p className="text-gray-500 text-base">
+              Your total estimated losses were <span className="font-bold">${result.costs.totalLossesUSD.toFixed(2)}</span>.
+            </p>
+            <p className="text-gray-500 text-base">
+              The average cost per chemo session <span className="font-bold">${result.averageSessionCostUSD.toFixed(2)}</span>.
+            </p>
+            </>
+        ) : null }
+      </div>
     </div>
   );
 }

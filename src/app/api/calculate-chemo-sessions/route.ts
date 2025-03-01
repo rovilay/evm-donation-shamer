@@ -9,7 +9,7 @@ const AVG_CHEMO_SESSION_COST_USD = 4500
 
 const COINDESK_ETH_PRICE_USD_URL = "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD"
 // low history limit for faster processing.
-const HISTORY_LIMIT = 20
+const HISTORY_LIMIT = 15
 const DEFAULT_ETH_PRICE_USD = 2228
 
 const provider = new ethers.providers.EtherscanProvider('mainnet');
@@ -29,9 +29,9 @@ export async function POST(req: NextRequest) {
         ...chemoSessions
       }
     });
-  } catch (error) {
+  } catch (error: any) { // eslint-disable-line
     console.error(error);
-    return NextResponse.json({ error: 'Failed to calculate' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Failed to calculate' }, { status: 500 });
   }
 }
 
